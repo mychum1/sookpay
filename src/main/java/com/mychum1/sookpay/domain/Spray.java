@@ -1,6 +1,7 @@
 package com.mychum1.sookpay.domain;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.List;
 
 @Entity
@@ -8,6 +9,9 @@ import java.util.List;
 public class Spray {
 
     @Id
+    @GeneratedValue
+    private Integer id;
+
     private String token;
 
     private String requester;
@@ -20,8 +24,38 @@ public class Spray {
 
     private Long initDate;
 
-    @OneToMany(mappedBy = "receiptId", fetch = FetchType.EAGER) //m+1 문제
-    private List<Receipt> receiptList;
+    public Spray(String token, String requester, String roomId, Long amountOfMondey, Integer personnel, Long initDate) {
+        this.token = token;
+        this.requester = requester;
+        this.roomId = roomId;
+        this.amountOfMondey = amountOfMondey;
+        this.personnel = personnel;
+        this.initDate = initDate;
+    }
+
+    public Spray() {}
+
+    public boolean isValidRequester(String requester) {
+        return !this.getRequester().equals(requester);
+    }
+
+    public boolean isValidTime(Long duration) {
+
+        return this.initDate + duration > Instant.now().getEpochSecond();
+    }
+
+    //m+1 문제
+//    @OneToMany
+//    @JoinColumn(name = "token")
+//    private List<Receipt> receiptList;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getToken() {
         return token;
@@ -71,24 +105,25 @@ public class Spray {
         this.initDate = initDate;
     }
 
-    public List<Receipt> getReceiptList() {
-        return receiptList;
-    }
-
-    public void setReceiptList(List<Receipt> receiptList) {
-        this.receiptList = receiptList;
-    }
+//    public List<Receipt> getReceiptList() {
+//        return receiptList;
+//    }
+//
+//    public void setReceiptList(List<Receipt> receiptList) {
+//        this.receiptList = receiptList;
+//    }
 
     @Override
     public String toString() {
         return "Spray{" +
-                "token='" + token + '\'' +
+                "id=" + id +
+                ", token='" + token + '\'' +
                 ", requester='" + requester + '\'' +
                 ", roomId='" + roomId + '\'' +
                 ", amountOfMondey=" + amountOfMondey +
                 ", personnel=" + personnel +
                 ", initDate=" + initDate +
-                ", receiptList=" + receiptList +
+//                ", receiptList=" + receiptList +
                 '}';
     }
 }

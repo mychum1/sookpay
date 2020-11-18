@@ -1,27 +1,62 @@
 package com.mychum1.sookpay.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name="receipt")
 public class Receipt {
 
     @Id
-    private String receiptId;
+    @GeneratedValue
+    private Integer receiptId;
 
-    private String token; //외래키
+    @ManyToOne
+    @JoinColumn(name="spray_token",insertable = false, updatable = false)
+    private Spray spray;
+
+    private String token; //외래키호
+
+    private String roomId;
 
     private String recipient;
 
+    private Long money;
+
     private Long initDate;
 
-    public String getReceiptId() {
+    public boolean isSameRecipient(String recipient) {
+        return recipient.equals(recipient);
+    }
+
+    public String getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(String roomId) {
+        this.roomId = roomId;
+    }
+
+    public Spray getSpray() {
+        return spray;
+    }
+
+    public void setSpray(Spray spray) {
+        this.spray = spray;
+    }
+
+    public Long getMoney() {
+        return money;
+    }
+
+    public void setMoney(Long money) {
+        this.money = money;
+    }
+
+    public Integer getReceiptId() {
         return receiptId;
     }
 
-    public void setReceiptId(String receiptId) {
+    public void setReceiptId(Integer receiptId) {
         this.receiptId = receiptId;
     }
 
@@ -52,9 +87,12 @@ public class Receipt {
     @Override
     public String toString() {
         return "Receipt{" +
-                "receiptId='" + receiptId + '\'' +
+                "receiptId=" + receiptId +
+                ", spray=" + spray +
                 ", token='" + token + '\'' +
+                ", roomId='" + roomId + '\'' +
                 ", recipient='" + recipient + '\'' +
+                ", money=" + money +
                 ", initDate=" + initDate +
                 '}';
     }
