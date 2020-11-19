@@ -1,5 +1,6 @@
 package com.mychum1.sookpay.service;
 
+import com.mychum1.sookpay.common.RandomTokenProcessor;
 import com.mychum1.sookpay.domain.Receipt;
 import com.mychum1.sookpay.domain.Spray;
 import com.mychum1.sookpay.domain.SprayInfo;
@@ -22,9 +23,6 @@ public class ApiService {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    MoneyProcessor moneyProcessor;
-
-    @Autowired
     SprayRepository sprayRepository;
 
     @Autowired
@@ -34,7 +32,7 @@ public class ApiService {
         List<Receipt> receiptList = receiptRepository.findByToken(token);
         //TODO 양방향으로 mapping 해주어야 할까?
         Spray spray;
-        System.out.println(receiptList.size());
+
         if(receiptList.size()==0) {
             spray = sprayRepository.findByTokenAndRoomIdAndRequester(token, roomId, userId);
             //TODO 구조 더 가독성 좋게 변경할 것
@@ -78,7 +76,7 @@ public class ApiService {
 
     public Spray postSpray(String requester, String roomId, Long amountOfMoney, Integer personnel) {
         //token 3자리 암호화
-        Spray spray = new Spray("tok", requester, roomId, amountOfMoney, personnel, Instant.now().getEpochSecond());
+        Spray spray = new Spray(RandomTokenProcessor.makeRandomToken(), requester, roomId, amountOfMoney, personnel, Instant.now().getEpochSecond());
         return sprayRepository.save(spray);
     }
 
@@ -86,6 +84,10 @@ public class ApiService {
     public void getSpray(String token, String userId, String roomId) throws NotValidSprayException {
         Spray spray = sprayRepository.findByTokenAndRoomId(token, roomId);
 
+        //조회할게 없음.
+        if(spray == null) {
+            throw new NotValidSprayException(500, "No Valid Spray");
+        }
         //1. 한 사용자는 한 번만
         //2. 받는 금액을 응답값으로
         //3. 동일한 대화방에 속한 사용자만 받을 수 있다.
@@ -101,7 +103,7 @@ public class ApiService {
             receipt.setToken(token);
             receipt.setRecipient(userId);
             receipt.setRoomId(roomId);
-            receipt.setMoney(spray.getAmountOfMondey()/spray.getPersonnel()); //TODO 미리 저장할까? + 10진수
+            receipt.setMoney(spray.getAmountOfMondey()/spray.getPersonnel()); //TODO 미리 저장할까? + 10진수 , 1000원 나누기 3하면 333,333,333 이면 1원은?
             receipt.setInitDate(now); //TODO set함수에서 체크하는걸 넣는건 어떨까?
             Receipt savedReceipt = receiptRepository.save(receipt);
             List<Receipt> receiptList=receiptRepository.findByTokenAndRoomIdAndInitDateLessThan(token, roomId, now);
@@ -115,6 +117,7 @@ public class ApiService {
                     break;
                 }
             }
+
             if(receiptList.size() >= spray.getPersonnel() || takeBefore) {
                 throw new NotValidSprayException(500,"Already taken");
             }
@@ -129,31 +132,9 @@ public class ApiService {
     }
 
 
-
     public boolean isValidSpray(Spray spray, Long duration, String requester) {
         return spray.isValidRequester(requester) && spray.isValidTime(duration);
     }
 
-    public void test() {
-        //TODO token 3자리 암호화 + 중복일수도 있다!
-        Spray spray = new Spray();
-        spray.setToken("tes");
-        spray.setRequester("requestor");
-        spray.setRoomId("roomid");
-        spray.setAmountOfMondey(5000L);
-        spray.setPersonnel(3);
-        spray.setInitDate(Instant.now().getEpochSecond());
-
-        Receipt r = new Receipt();
-        r.setSpray(sprayRepository.save(spray));
-        r.setToken("tes");
-        receiptRepository.saveAndFlush(r);
-
-        receiptRepository.findByToken("tes").forEach(it -> System.out.println(it.toString()));
-        System.out.println("========");
-        sprayRepository.findAll().forEach(it->System.out.println(it.toString()));
-
-        //moneyProcessor.test();
-    }
 
 }
