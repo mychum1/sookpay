@@ -1,17 +1,18 @@
 package com.mychum1.sookpay.domain;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name="receipt")
-public class Receipt {
+public class Receipt implements Serializable {
 
     @Id
     @GeneratedValue
     private Integer receiptId;
 
     @ManyToOne
-    @JoinColumn(name="spray_token",insertable = false, updatable = false)
+    @JoinColumn(referencedColumnName = "token", name="token",insertable = false, updatable = false)
     private Spray spray;
 
     private String token; //외래키호
@@ -23,6 +24,16 @@ public class Receipt {
     private Long money;
 
     private Long initDate;
+
+    private Boolean status;
+
+    public Boolean getStatus() {
+        return status;
+    }
+
+    public void setStatus(Boolean status) {
+        this.status = status;
+    }
 
     public boolean isSameRecipient(String recipient) {
         return recipient.equals(recipient);
@@ -94,6 +105,7 @@ public class Receipt {
                 ", recipient='" + recipient + '\'' +
                 ", money=" + money +
                 ", initDate=" + initDate +
+                ", status=" + status +
                 '}';
     }
 }

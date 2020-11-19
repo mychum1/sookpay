@@ -1,17 +1,22 @@
 package com.mychum1.sookpay.domain;
 
+import org.hibernate.annotations.NaturalId;
+
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
 
 @Entity
 @Table(name="spray")
-public class Spray {
+public class Spray implements Serializable {
 
+    //TODO 변수명 다시 고민해볼 것
     @Id
     @GeneratedValue
     private Integer id;
 
+    @NaturalId
     private String token;
 
     private String requester;

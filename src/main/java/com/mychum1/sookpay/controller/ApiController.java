@@ -41,7 +41,7 @@ public class ApiController {
         //  이렇게 되면 총 요청수가
         //      조회(받을 자격 되는지. 단, 조회할 때 receipt도 다 가져온다. 이미 저장된 받은 사람들 체크.. 하려고 하니까 무조건 Insert하는 시점에 맞물리면 롤백되겠구나.),
         //      저장,
-        //      조회(다시 조회해서 받을 수있었는지 확인)해서 3번이 필수로 됨..
+        //      조회(다시 조회해서 받을 수있었는지 확인)해서 3번이 필수로 됨..(이때 status를 true로 바꿔준다. 유효하다면)
         try {
             apiService.getSpray(token, userId, roomId);
             return new ResponseEntity<>(new Response<>(HttpStatus.OK.value(), "Success", null), HttpStatus.OK);
@@ -55,8 +55,14 @@ public class ApiController {
     public ResponseEntity<Response> getSprayInfo(@RequestParam(value = "token", required=true) String token,
                                              @RequestHeader(value = "X-USER-ID", required = true) String userId,
                                              @RequestHeader(value = "X-ROOM-ID", required = true) String roomId) {
-        logger.info("call getSprayInfo() personnel:{}, money:{}, X-USER-ID:{}, X-ROOM-ID:{}", token, userId, roomId);
+        logger.info("call getSprayInfo() token:{}, userId:{},roomId:{}", token, userId, roomId);
 
-        return null;
+        try {
+            apiService.getSprayDetail(token, userId, roomId);
+            return new ResponseEntity<>(new Response<>(HttpStatus.OK.value(), "Success", apiService.getSprayDetail(token, userId, roomId)), HttpStatus.OK);
+
+        }catch (NotValidSprayException e) {
+            return new ResponseEntity<>(new Response<>(HttpStatus.OK.value(), e.getMessage(), null), HttpStatus.OK);
+        }
     }
 }

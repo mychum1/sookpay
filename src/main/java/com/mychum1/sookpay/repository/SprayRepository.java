@@ -8,5 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SprayRepository extends JpaRepository<Spray, String> {
 
+    Spray findByTokenAndRoomIdAndRequester(String token, String roomId, String requester);
+
     Spray findByTokenAndRoomId(String token, String roomId);
 }
