@@ -1,8 +1,12 @@
 package com.mychum1.sookpay.controller;
 
+import com.mychum1.sookpay.common.Code;
+import com.mychum1.sookpay.domain.Receipt;
 import com.mychum1.sookpay.domain.Response;
+import com.mychum1.sookpay.domain.Spray;
+import com.mychum1.sookpay.domain.SprayInfo;
 import com.mychum1.sookpay.exception.NotValidSprayException;
-import com.mychum1.sookpay.service.ApiService;
+import com.mychum1.sookpay.service.SprayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +21,18 @@ public class ApiController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private ApiService apiService;
+    private SprayService sprayService;
 
+
+
+    /**
+     * 돈뿌리기 요청건을 생성한다.
+     * @param personnel : 뿌릴 인원
+     * @param money : 뿌릴 금액
+     * @param roomId : 뿌릴 방 번호
+     * @param userId : 뿌린 사람
+     * @return Response
+     */
     @PostMapping("/spray")
     public ResponseEntity<Response> postSpray(@RequestParam(value = "personnel", required=true) Integer personnel,
                                               @RequestParam(value = "money", required = true) Long money,
@@ -26,7 +40,18 @@ public class ApiController {
                                               @RequestHeader(value = "X-ROOM-ID", required = true) String roomId) {
         logger.info("call postSpray() personnel:{}, money:{}, X-USER-ID:{}, X-ROOM-ID:{}", personnel, money, userId, roomId);
 
-        return new ResponseEntity<>(new Response<>(HttpStatus.OK.value(), "Success",apiService.postSpray(userId, roomId, money, personnel)), HttpStatus.OK);
+        if(personnel<=0) {
+            return new ResponseEntity<>(new Response<>(Code.FAIL_CODE, Code.FAIL_MSG,null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        try{
+            Spray spray = sprayService.postSpray(userId, roomId, money, personnel);
+            return new ResponseEntity<>(new Response<>(Code.SUCCESS_CODE, Code.SUCCESS_MSG,spray), HttpStatus.OK);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(new Response<>(Code.FAIL_CODE, e.getMessage(),null), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
 
     }
 
@@ -42,13 +67,19 @@ public class ApiController {
         //      조회(받을 자격 되는지. 단, 조회할 때 receipt도 다 가져온다. 이미 저장된 받은 사람들 체크.. 하려고 하니까 무조건 Insert하는 시점에 맞물리면 롤백되겠구나.),
         //      저장,
         //      조회(다시 조회해서 받을 수있었는지 확인)해서 3번이 필수로 됨..(이때 status를 true로 바꿔준다. 유효하다면)
-        try {
-            apiService.getSpray(token, userId, roomId);
-            return new ResponseEntity<>(new Response<>(HttpStatus.OK.value(), "Success", null), HttpStatus.OK);
 
-        }catch (NotValidSprayException e) {
-            return new ResponseEntity<>(new Response<>(HttpStatus.OK.value(), e.getMessage(), null), HttpStatus.OK);
+        try {
+            Receipt result = sprayService.getSpray(token, userId, roomId);
+            if(result == null) {
+                throw new NotValidSprayException(Code.FAIL_CODE, Code.FAIL_MSG);
+            }
+            return new ResponseEntity<>(new Response<>(Code.SUCCESS_CODE, Code.SUCCESS_MSG, null), HttpStatus.OK);
+        }catch(NotValidSprayException e) {
+            return new ResponseEntity<>(new Response<>(Code.FAIL_CODE, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
+
+
     }
 
     @GetMapping("/spray/info")
@@ -58,11 +89,12 @@ public class ApiController {
         logger.info("call getSprayInfo() token:{}, userId:{},roomId:{}", token, userId, roomId);
 
         try {
-            apiService.getSprayDetail(token, userId, roomId);
-            return new ResponseEntity<>(new Response<>(HttpStatus.OK.value(), "Success", apiService.getSprayDetail(token, userId, roomId)), HttpStatus.OK);
+            SprayInfo sprayInfo = sprayService.getSprayDetail(token, userId, roomId);
+            return new ResponseEntity<>(new Response<>(Code.SUCCESS_CODE, Code.SUCCESS_MSG, sprayInfo), HttpStatus.OK);
 
         }catch (NotValidSprayException e) {
-            return new ResponseEntity<>(new Response<>(HttpStatus.OK.value(), e.getMessage(), null), HttpStatus.OK);
+            e.printStackTrace();
+            return new ResponseEntity<>(new Response<>(Code.FAIL_CODE, e.getMessage(), null), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

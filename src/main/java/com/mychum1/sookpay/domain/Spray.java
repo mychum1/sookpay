@@ -3,6 +3,7 @@ package com.mychum1.sookpay.domain;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
@@ -29,6 +30,10 @@ public class Spray implements Serializable {
 
     private Long initDate;
 
+//    @OneToMany(fetch = FetchType.EAGER)
+//    @JoinColumn(name = "token")
+//    private List<Receipt> receiptList;
+
     public Spray(String token, String requester, String roomId, Long amountOfMondey, Integer personnel, Long initDate) {
         this.token = token;
         this.requester = requester;
@@ -40,6 +45,14 @@ public class Spray implements Serializable {
 
     public Spray() {}
 
+//    public List<Receipt> getReceiptList() {
+//        return receiptList;
+//    }
+//
+//    public void setReceiptList(List<Receipt> receiptList) {
+//        this.receiptList = receiptList;
+//    }
+
     public boolean isValidRequester(String requester) {
         return !this.getRequester().equals(requester);
     }
@@ -48,11 +61,6 @@ public class Spray implements Serializable {
 
         return this.initDate + duration > Instant.now().getEpochSecond();
     }
-
-    //m+1 문제
-//    @OneToMany
-//    @JoinColumn(name = "token")
-//    private List<Receipt> receiptList;
 
     public Integer getId() {
         return id;
@@ -110,14 +118,6 @@ public class Spray implements Serializable {
         this.initDate = initDate;
     }
 
-//    public List<Receipt> getReceiptList() {
-//        return receiptList;
-//    }
-//
-//    public void setReceiptList(List<Receipt> receiptList) {
-//        this.receiptList = receiptList;
-//    }
-
     @Override
     public String toString() {
         return "Spray{" +
@@ -128,7 +128,7 @@ public class Spray implements Serializable {
                 ", amountOfMondey=" + amountOfMondey +
                 ", personnel=" + personnel +
                 ", initDate=" + initDate +
-//                ", receiptList=" + receiptList +
+               // ", receiptList=" + receiptList +
                 '}';
     }
 }

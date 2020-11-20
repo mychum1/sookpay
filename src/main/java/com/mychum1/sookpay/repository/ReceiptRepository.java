@@ -15,7 +15,7 @@ public interface ReceiptRepository extends JpaRepository<Receipt, String> {
 
 
     @EntityGraph(attributePaths = {"spray"})
-    List<Receipt> findByToken(String token);
+    List<Receipt> findByTokenAndRoomId(String token, String roomId);
 
     @EntityGraph
     List<Receipt> findByTokenAndRecipient(String token, String recipient);
@@ -29,8 +29,17 @@ public interface ReceiptRepository extends JpaRepository<Receipt, String> {
      *
      * @param token
      * @param roomId
-     * @param now
      * @return
      */
-    List<Receipt> findByTokenAndRoomIdAndInitDateLessThan(String token, String roomId, Long now);
+    List<Receipt> findByTokenAndRoomIdOrderByReceiptOrderAsc(String token, String roomId);
+
+    @Modifying
+    @Query("update Receipt r set r.recipient=:recipient, r.status=true, r.initDate=:initDate " +
+            "where r.receiptId=:receiptId and r.status=false " +
+            "and " +
+            "(select count(re) from Receipt re " +
+            "where re.recipient=:recipient and re.token=:token and re.roomId=:roomId) <= 0")
+    Integer updateReceiptentAndStatus(String recipient, Long initDate, String token, String roomId, Integer receiptId);
+
+
 }

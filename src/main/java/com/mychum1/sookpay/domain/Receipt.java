@@ -27,6 +27,16 @@ public class Receipt implements Serializable {
 
     private Boolean status;
 
+    private Integer receiptOrder;
+
+    public Integer getReceiptOrder() {
+        return receiptOrder;
+    }
+
+    public void setReceiptOrder(Integer receiptOrder) {
+        this.receiptOrder = receiptOrder;
+    }
+
     public Boolean getStatus() {
         return status;
     }
@@ -106,6 +116,7 @@ public class Receipt implements Serializable {
                 ", money=" + money +
                 ", initDate=" + initDate +
                 ", status=" + status +
+                ", receiptOrder=" + receiptOrder +
                 '}';
     }
 }
