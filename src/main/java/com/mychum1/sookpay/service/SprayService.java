@@ -11,6 +11,7 @@ import com.mychum1.sookpay.repository.SprayRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -28,6 +29,12 @@ public class SprayService {
 
     @Autowired
     ReceiptRepository receiptRepository;
+
+    @Value("${get.request.duration}")
+    private Long getDuration;
+
+    @Value("${get.info.request.duration}")
+    private Long getInfoDuration;
 
     /**
      * 뿌리기 건을 등록하면서 뿌리기를 받을 건들도 등록해둔다.
@@ -63,7 +70,7 @@ public class SprayService {
     public Receipt getSpray(String token, String userId, String roomId) throws NotValidSprayException {
         //1. 한 사용자는 한 번만 o
         //2. 받는 금액을 응답값으로
-        //3. 동일한 대화방에 속한 사용자만 받을 수 있다. o
+        //3. 동일한 대화방에 속한 사용자만 받을 수 있다. o TODO 방에 있는 사람들을 관리해야 할까? 아니면 방 번호와 토큰을 알면 그 방의 사용자라고 봐도 될까?
         //4. 10분간만 유효 o
         //5. 본인은 받지 못함 o
         List<Receipt> receiptList = receiptRepository.findByTokenAndRoomIdOrderByReceiptOrderAsc(token, roomId);
@@ -110,7 +117,7 @@ public class SprayService {
         isValidSpray(receiptList);
         Spray spray = receiptList.get(0).getSpray();
         isOwnerOfSpray(userId, spray); // 뿌린사람 확인
-        isReadablePeriod(spray, (60*24*7L)); //7일간만 조회 가능
+        isReadablePeriod(spray, getInfoDuration); //7일간만 조회 가능
 
         //TODO 양방향으로 mapping 해주어야 할까?
 
@@ -139,7 +146,7 @@ public class SprayService {
     }
 
     private void isValidTime(Spray spray) throws NotValidSprayException {
-        if(!spray.isValidTime((60*10L))) {
+        if(!spray.isValidTime(getDuration)) {
             throw new NotValidSprayException(500, "Time Over");
         }
     }
