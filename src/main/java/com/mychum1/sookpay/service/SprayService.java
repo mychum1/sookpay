@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class SprayService {
+public class SprayService implements SprayServiceIn{
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -61,6 +61,7 @@ public class SprayService {
      * @param personnel
      * @return
      */
+    @Override
     @Transactional
     public Spray postSpray(String requester, String roomId, Long amountOfMoney, Integer personnel) {
         logger.info("call postSpray() requester : {}, roomId : {}, amountOfMoney : {}, personnel : {}", requester, roomId, amountOfMoney, personnel);
@@ -99,6 +100,7 @@ public class SprayService {
      * @return
      * @throws NotValidSprayException
      */
+    @Override
     @Transactional(rollbackOn = {NotValidSprayException.class})
     public Receipt getSpray(String token, String userId, String roomId) throws NotValidSprayException {
         logger.info("call getSpray() token : {}, userId : {}, roomId : {}", token, userId, roomId);
@@ -135,6 +137,7 @@ public class SprayService {
      * @return
      * @throws NotValidSprayException
      */
+    @Override
     public SprayInfo getSprayDetail(String token, String userId, String roomId) throws NotValidSprayException {
         logger.info("call getSprayDetail() token : {}, userId : {}, roomId : {}", token, userId, roomId);
         Spray spray = sprayRepository.findByToken(token);

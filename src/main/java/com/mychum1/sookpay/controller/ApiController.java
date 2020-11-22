@@ -7,6 +7,7 @@ import com.mychum1.sookpay.domain.Spray;
 import com.mychum1.sookpay.domain.SprayInfo;
 import com.mychum1.sookpay.exception.NotValidSprayException;
 import com.mychum1.sookpay.service.SprayService;
+import com.mychum1.sookpay.service.SprayServiceIn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class ApiController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
-    private SprayService sprayService;
+    private SprayServiceIn sprayService;
 
     /**
      * 돈뿌리기 요청건을 생성한다.

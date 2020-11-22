@@ -3,13 +3,13 @@
 내 방 친구들에게 돈을 뿌리고 받는 이벤트의 API 를 구현한다.
 
 # 개발 환경 
-1. 언어 : Java 11
-2. 프레임워크 : Spring Boot 2
-3. 데이터베이스 : H2
-4. OS : MacOS
-5. 빌드 : Gradle
-6. 테스트 : Spring Boot test
-7. 기타 : JPA 
+* 언어 : Java 11
+* 프레임워크 : Spring Boot 2
+* 데이터베이스 : H2 (embedded)
+* OS : MacOS
+* 빌드 : Gradle
+* 테스트 : Spring Boot test
+* 기타 : JPA 
 
 # 기능
 ## 1. 돈 뿌리기
