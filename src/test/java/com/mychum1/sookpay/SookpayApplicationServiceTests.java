@@ -6,13 +6,11 @@ import com.mychum1.sookpay.service.SprayService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-@SpringBootTest(classes = SookpayApplication.class)
-@AutoConfigureMockMvc
+@SpringBootTest
 class SookpayApplicationServiceTests {
 
 	@Autowired
@@ -25,7 +23,6 @@ class SookpayApplicationServiceTests {
 
 	@BeforeEach
 	public void init() {
-
 		personnel=3;
 		money=1000L;
 		userId="ksko";
@@ -81,8 +78,8 @@ class SookpayApplicationServiceTests {
 		for (int i = 0; i < personnel; i++) {
 			sprayService.getSpray(token, "another"+i, roomId);
 		}
+		assertThrows(NotValidSprayException.class, () ->sprayService.getSpray(token, "another", roomId));
 
-		assertNull(sprayService.getSpray(token, "another", roomId));
 	}
 
 	/**

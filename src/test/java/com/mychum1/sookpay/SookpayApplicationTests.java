@@ -1,9 +1,9 @@
 package com.mychum1.sookpay;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mychum1.sookpay.controller.ApiController;
 import com.mychum1.sookpay.domain.Response;
-import com.mychum1.sookpay.domain.Spray;
 import com.mychum1.sookpay.service.SprayService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +20,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 
@@ -114,9 +115,12 @@ class SookpayApplicationTests {
 	}
 
 	private String testPostAndGetToken() throws Exception {
-		MvcResult result = testPostSpray();
-		Response<LinkedHashMap> spray = objectMapper.readValue(result.getResponse().getContentAsString(), Response.class);
+		Response<LinkedHashMap> spray = getResponseFromResult(testPostSpray());
 		return spray.getData().get("token").toString();
+	}
+
+	private Response<LinkedHashMap> getResponseFromResult(MvcResult result) throws UnsupportedEncodingException, JsonProcessingException {
+		return objectMapper.readValue(result.getResponse().getContentAsString(), Response.class);
 	}
 
 	/**
@@ -155,7 +159,7 @@ class SookpayApplicationTests {
 		params.add("token",token);
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/spray").params(params)
-				.header("X-USER-ID","ksko1").header("X-ROOM-ID",roomId))
+				.header("X-USER-ID",userId).header("X-ROOM-ID",roomId))
 				.andExpect(MockMvcResultMatchers.status().is5xxServerError())
 				.andDo(MockMvcResultHandlers.print())
 				.andReturn();

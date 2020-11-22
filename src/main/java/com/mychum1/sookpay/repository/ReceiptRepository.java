@@ -17,9 +17,6 @@ public interface ReceiptRepository extends JpaRepository<Receipt, String> {
     @EntityGraph(attributePaths = {"spray"})
     List<Receipt> findByTokenAndRoomId(String token, String roomId);
 
-    @EntityGraph
-    List<Receipt> findByTokenAndRecipient(String token, String recipient);
-
     @Modifying
     @Query("update Receipt r set r.status=:status where r.receiptId=:id")
     void updateStatusById(boolean status, Integer id);

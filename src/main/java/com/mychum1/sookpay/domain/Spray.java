@@ -3,10 +3,8 @@ package com.mychum1.sookpay.domain;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.List;
 
 @Entity
 @Table(name="spray")
@@ -30,10 +28,6 @@ public class Spray implements Serializable {
 
     private Long initDate;
 
-//    @OneToMany(fetch = FetchType.EAGER)
-//    @JoinColumn(name = "token")
-//    private List<Receipt> receiptList;
-
     public Spray(String token, String requester, String roomId, Long amountOfMondey, Integer personnel, Long initDate) {
         this.token = token;
         this.requester = requester;
@@ -44,14 +38,6 @@ public class Spray implements Serializable {
     }
 
     public Spray() {}
-
-//    public List<Receipt> getReceiptList() {
-//        return receiptList;
-//    }
-//
-//    public void setReceiptList(List<Receipt> receiptList) {
-//        this.receiptList = receiptList;
-//    }
 
     public boolean isValidRequester(String requester) {
         return !this.getRequester().equals(requester);
@@ -128,7 +114,6 @@ public class Spray implements Serializable {
                 ", amountOfMondey=" + amountOfMondey +
                 ", personnel=" + personnel +
                 ", initDate=" + initDate +
-               // ", receiptList=" + receiptList +
                 '}';
     }
 }

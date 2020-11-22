@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
-@Table(name="receipt")
+@Table(name="receipt", indexes = {@Index(columnList="token")})
 public class Receipt implements Serializable {
 
     @Id
@@ -15,7 +15,7 @@ public class Receipt implements Serializable {
     @JoinColumn(referencedColumnName = "token", name="token",insertable = false, updatable = false)
     private Spray spray;
 
-    private String token; //외래키호
+    private String token; //외래키
 
     private String roomId;
 
