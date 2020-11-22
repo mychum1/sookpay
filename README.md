@@ -107,7 +107,7 @@ field name|value type|의미
 ----------|------------|---
 code|Integer|응답 코드 
 msg|String|응답 결과 
-data|Spray Object| 뿌려진 정보
+data|String| 토큰
 
 ## GET /api/spray
 뿌린 금액 받기 요청을 한다.

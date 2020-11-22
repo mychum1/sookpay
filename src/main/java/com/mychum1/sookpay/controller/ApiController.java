@@ -12,9 +12,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+@Controller
 @RequestMapping("/api")
 public class ApiController {
 
@@ -44,7 +45,7 @@ public class ApiController {
 
         try{
             Spray spray = sprayService.postSpray(userId, roomId, money, personnel);
-            return new ResponseEntity<>(new Response<>(Code.SUCCESS_CODE, Code.SUCCESS_MSG,spray), HttpStatus.OK);
+            return new ResponseEntity<>(new Response<>(Code.SUCCESS_CODE, Code.SUCCESS_MSG,spray.getToken()), HttpStatus.OK);
         }catch (Exception e) {
             logger.error(e.getMessage());
             return new ResponseEntity<>(new Response<>(Code.FAIL_CODE, e.getMessage(),null), HttpStatus.INTERNAL_SERVER_ERROR);

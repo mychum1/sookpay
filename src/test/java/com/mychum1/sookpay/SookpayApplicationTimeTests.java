@@ -76,8 +76,8 @@ class SookpayApplicationTimeTests {
 
 	private String testPostAndGetToken() throws Exception {
 		MvcResult result = testPostSpray();
-		Response<LinkedHashMap> spray = objectMapper.readValue(result.getResponse().getContentAsString(), Response.class);
-		return spray.getData().get("token").toString();
+		Response<String> spray = objectMapper.readValue(result.getResponse().getContentAsString(), Response.class);
+		return spray.getData();
 	}
 	public MvcResult testPostSpray() throws Exception {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();

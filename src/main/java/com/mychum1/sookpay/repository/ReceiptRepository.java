@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ReceiptRepository extends JpaRepository<Receipt, String> {
+public interface ReceiptRepository extends JpaRepository<Receipt, Integer> {
 
 
     @EntityGraph(attributePaths = {"spray"})
@@ -25,10 +25,9 @@ public interface ReceiptRepository extends JpaRepository<Receipt, String> {
      * 방번호와 토큰을 가지고 조회한 받은 사람 목록에서 요청한 시간 이전에 받은 사람들 조회
      *
      * @param token
-     * @param roomId
      * @return
      */
-    List<Receipt> findByTokenAndRoomIdOrderByReceiptOrderAsc(String token, String roomId);
+    List<Receipt> findByTokenOrderByReceiptOrderAsc(String token);
 
     @Modifying
     @Query("update Receipt r set r.recipient=:recipient, r.status=true, r.initDate=:initDate " +

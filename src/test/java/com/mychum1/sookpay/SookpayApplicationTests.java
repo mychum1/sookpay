@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
@@ -22,7 +21,6 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
 
 @SpringBootTest(classes = SookpayApplication.class)
 @AutoConfigureMockMvc
@@ -66,7 +64,6 @@ class SookpayApplicationTests {
 		return mockMvc.perform(MockMvcRequestBuilders.post("/api/spray").params(params)
 				.header("X-USER-ID",userId).header("X-ROOM-ID", roomId))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 
 	}
@@ -83,7 +80,6 @@ class SookpayApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.post("/api/spray").params(params)
 				.header("X-USER-ID","ksko").header("X-ROOM-ID","room4"))
 				.andExpect(MockMvcResultMatchers.status().is5xxServerError())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 	}
 
@@ -110,16 +106,15 @@ class SookpayApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/spray").params(params)
 				.header("X-USER-ID","ksko1").header("X-ROOM-ID",roomId))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 	}
 
 	private String testPostAndGetToken() throws Exception {
-		Response<LinkedHashMap> spray = getResponseFromResult(testPostSpray());
-		return spray.getData().get("token").toString();
+		Response<String> spray = getResponseFromResult(testPostSpray());
+		return spray.getData();
 	}
 
-	private Response<LinkedHashMap> getResponseFromResult(MvcResult result) throws UnsupportedEncodingException, JsonProcessingException {
+	private Response<String> getResponseFromResult(MvcResult result) throws UnsupportedEncodingException, JsonProcessingException {
 		return objectMapper.readValue(result.getResponse().getContentAsString(), Response.class);
 	}
 
@@ -130,8 +125,8 @@ class SookpayApplicationTests {
 	public void testGetSprayNotSameRoom() throws Exception {
 
 		MvcResult result = testPostSpray();
-		Response<LinkedHashMap> spray = objectMapper.readValue(result.getResponse().getContentAsString(), Response.class);
-		String token = spray.getData().get("token").toString();
+		Response<String> spray = objectMapper.readValue(result.getResponse().getContentAsString(), Response.class);
+		String token = spray.getData();
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("token",token);
@@ -139,7 +134,6 @@ class SookpayApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/spray").params(params)
 				.header("X-USER-ID","ksko1").header("X-ROOM-ID","room-another"))
 				.andExpect(MockMvcResultMatchers.status().is5xxServerError())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 	}
 
@@ -152,8 +146,8 @@ class SookpayApplicationTests {
 	public void testGetSpraySameRequester() throws Exception {
 
 		MvcResult result = testPostSpray();
-		Response<LinkedHashMap> spray = objectMapper.readValue(result.getResponse().getContentAsString(), Response.class);
-		String token = spray.getData().get("token").toString();
+		Response<String> spray = objectMapper.readValue(result.getResponse().getContentAsString(), Response.class);
+		String token = spray.getData();
 
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("token",token);
@@ -161,7 +155,6 @@ class SookpayApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/spray").params(params)
 				.header("X-USER-ID",userId).header("X-ROOM-ID",roomId))
 				.andExpect(MockMvcResultMatchers.status().is5xxServerError())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 	}
 
@@ -179,13 +172,11 @@ class SookpayApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/spray").params(params)
 				.header("X-USER-ID","ksko1").header("X-ROOM-ID",roomId))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/spray").params(params)
 				.header("X-USER-ID","ksko1").header("X-ROOM-ID",roomId))
 				.andExpect(MockMvcResultMatchers.status().is5xxServerError())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 	}
 
@@ -204,13 +195,11 @@ class SookpayApplicationTests {
 			mockMvc.perform(MockMvcRequestBuilders.get("/api/spray").params(params)
 					.header("X-USER-ID","ksko"+i).header("X-ROOM-ID",roomId))
 					.andExpect(MockMvcResultMatchers.status().isOk())
-					.andDo(MockMvcResultHandlers.print())
 					.andReturn();
 		}
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/spray").params(params)
 				.header("X-USER-ID","another").header("X-ROOM-ID",roomId))
 				.andExpect(MockMvcResultMatchers.status().is5xxServerError())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 
 	}
@@ -229,13 +218,11 @@ class SookpayApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/spray").params(params)
 				.header("X-USER-ID","ksko1").header("X-ROOM-ID",roomId))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/spray/info").params(params)
 				.header("X-USER-ID",userId).header("X-ROOM-ID",roomId))
 				.andExpect(MockMvcResultMatchers.status().isOk())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 	}
 
@@ -251,7 +238,6 @@ class SookpayApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/spray/info").params(params)
 				.header("X-USER-ID",userId).header("X-ROOM-ID",roomId))
 				.andExpect(MockMvcResultMatchers.status().is5xxServerError())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 	}
 
@@ -268,7 +254,6 @@ class SookpayApplicationTests {
 		mockMvc.perform(MockMvcRequestBuilders.get("/api/spray/info").params(params)
 				.header("X-USER-ID","another").header("X-ROOM-ID",roomId))
 				.andExpect(MockMvcResultMatchers.status().is5xxServerError())
-				.andDo(MockMvcResultHandlers.print())
 				.andReturn();
 	}
 

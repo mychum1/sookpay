@@ -1,11 +1,15 @@
 package com.mychum1.sookpay.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.List;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class)
 @Entity
 @Table(name="spray")
 public class Spray implements Serializable {
@@ -27,6 +31,9 @@ public class Spray implements Serializable {
     private Integer personnel;
 
     private Long initDate;
+
+    @OneToMany(mappedBy = "spray",cascade = CascadeType.ALL)
+    private List<Receipt> receiptList;
 
     public Spray(String token, String requester, String roomId, Long amountOfMondey, Integer personnel, Long initDate) {
         this.token = token;
@@ -104,6 +111,15 @@ public class Spray implements Serializable {
         this.initDate = initDate;
     }
 
+
+    public List<Receipt> getReceiptList() {
+        return receiptList;
+    }
+
+    public void setReceiptList(List<Receipt> receiptList) {
+        this.receiptList = receiptList;
+    }
+
     @Override
     public String toString() {
         return "Spray{" +
@@ -114,6 +130,7 @@ public class Spray implements Serializable {
                 ", amountOfMondey=" + amountOfMondey +
                 ", personnel=" + personnel +
                 ", initDate=" + initDate +
+                ", receiptList=" + receiptList +
                 '}';
     }
 }

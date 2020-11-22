@@ -37,6 +37,23 @@ public class SprayService {
     private Long getInfoDuration;
 
     /**
+     * 고유한 토큰을 구한다.
+     * 최대 5번 수행한다.
+     * @return
+     */
+    private String makeUniqueToken() {
+        String token = RandomTokenProcessor.makeRandomToken();
+
+        for (int i = 0; i < 5; i++) {
+            if(!sprayRepository.existsByToken(token)) {
+                break;
+            }
+        }
+
+        return token;
+    }
+
+    /**
      * 뿌리기 건을 등록하면서 뿌리기를 받을 건들도 등록해둔다.
      * @param requester
      * @param roomId
@@ -48,8 +65,9 @@ public class SprayService {
     public Spray postSpray(String requester, String roomId, Long amountOfMoney, Integer personnel) {
         logger.info("call postSpray() requester : {}, roomId : {}, amountOfMoney : {}, personnel : {}", requester, roomId, amountOfMoney, personnel);
 
-        Spray spray = new Spray(RandomTokenProcessor.makeRandomToken(), requester, roomId, amountOfMoney, personnel, Instant.now().getEpochSecond());
-        sprayRepository.save(spray);
+        String token = makeUniqueToken();
+
+        Spray spray = new Spray(token, requester, roomId, amountOfMoney, personnel, Instant.now().getEpochSecond());
 
         long money = amountOfMoney/personnel;
         long spare = amountOfMoney%personnel;
@@ -66,7 +84,8 @@ public class SprayService {
             receiptList.add(receipt);
         }
         receiptList.get(0).setMoney(money+spare);
-        receiptRepository.saveAll(receiptList);
+        spray.setReceiptList(receiptList);
+        sprayRepository.save(spray);
         return spray;
     }
 
@@ -83,10 +102,10 @@ public class SprayService {
     @Transactional(rollbackOn = {NotValidSprayException.class})
     public Receipt getSpray(String token, String userId, String roomId) throws NotValidSprayException {
         logger.info("call getSpray() token : {}, userId : {}, roomId : {}", token, userId, roomId);
-        List<Receipt> receiptList = receiptRepository.findByTokenAndRoomIdOrderByReceiptOrderAsc(token, roomId);
-        ValidationProcessor.isSameRoom(receiptList); // 같은 방의 사용자만 수령할 수 있다.
+        Spray spray = sprayRepository.findByToken(token);
+        List<Receipt> receiptList = spray.getReceiptList();
+        ValidationProcessor.isSameRoom(spray, roomId); // 같은 방의 사용자만 수령할 수 있다.
 
-        Spray spray = receiptList.get(0).getSpray();
         ValidationProcessor.isValidTime(spray, getDuration); // 유효한 시간 내에 요청한 것인지 확인한다.
         ValidationProcessor.isSameRequester(spray, userId); // 뿌리기를 요청한 사용자는 받을 수 없다.
         ValidationProcessor.isValidRequester(receiptList, userId); // 이미 받은 사용자인지 확인한다.
@@ -118,9 +137,9 @@ public class SprayService {
      */
     public SprayInfo getSprayDetail(String token, String userId, String roomId) throws NotValidSprayException {
         logger.info("call getSprayDetail() token : {}, userId : {}, roomId : {}", token, userId, roomId);
-        List<Receipt> receiptList = receiptRepository.findByTokenAndRoomId(token, roomId);
-        ValidationProcessor.isValidSpray(receiptList); //유효한 뿌리기 건이 있는지 확인한다.
-        Spray spray = receiptList.get(0).getSpray();
+        Spray spray = sprayRepository.findByToken(token);
+        ValidationProcessor.isValidSpray(spray); //유효한 뿌리기 건이 있는지 확인한다.
+        List<Receipt> receiptList = spray.getReceiptList();
         ValidationProcessor.isOwnerOfSpray(userId, spray); // 뿌린 사람이 조회한 것인지 확인한다.
         ValidationProcessor.isValidTime(spray, getInfoDuration); //조회 가능 기간에 조회한 것인지 확인한다.
 

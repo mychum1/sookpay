@@ -101,7 +101,7 @@ class SookpayApplicationValidationTests {
 	 */
 	@Test
 	public void testIsSameRoom() throws NotValidSprayException {
-		assertThrows(NotValidSprayException.class, () -> ValidationProcessor.isSameRoom(null));
+		assertThrows(NotValidSprayException.class, () -> ValidationProcessor.isSameRoom(spray, "another"));
 	}
 
 	/**

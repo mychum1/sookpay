@@ -1,7 +1,12 @@
 package com.mychum1.sookpay.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import javax.persistence.*;
 import java.io.Serializable;
+
 
 @Entity
 @Table(name="receipt", indexes = {@Index(columnList="token")})
@@ -57,6 +62,7 @@ public class Receipt implements Serializable {
         this.roomId = roomId;
     }
 
+
     public Spray getSpray() {
         return spray;
     }
@@ -109,7 +115,6 @@ public class Receipt implements Serializable {
     public String toString() {
         return "Receipt{" +
                 "receiptId=" + receiptId +
-                ", spray=" + spray +
                 ", token='" + token + '\'' +
                 ", roomId='" + roomId + '\'' +
                 ", recipient='" + recipient + '\'' +

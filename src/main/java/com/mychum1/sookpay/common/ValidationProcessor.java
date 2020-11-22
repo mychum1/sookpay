@@ -37,8 +37,8 @@ public class ValidationProcessor {
      * @param receiptList
      * @throws NotValidSprayException
      */
-    public static void isValidSpray(List<Receipt> receiptList) throws NotValidSprayException {
-        if(receiptList==null || receiptList.size()<=0) {
+    public static void isValidSpray(Spray spray) throws NotValidSprayException {
+        if(spray==null) {
             throw new NotValidSprayException(Code.FAIL_NOT_VALID, Code.FAIL_NOT_VALID_MSG);
         }
     }
@@ -60,8 +60,8 @@ public class ValidationProcessor {
      * @param receipts
      * @throws NotValidSprayException
      */
-    public static void isSameRoom(List<Receipt> receipts) throws NotValidSprayException {
-        if(receipts == null || receipts.size()==0) {
+    public static void isSameRoom(Spray spray, String roomId) throws NotValidSprayException {
+        if(!spray.getRoomId().equals(roomId)) {
             throw new NotValidSprayException(Code.FAIL_NOT_VALID, Code.FAIL_NOT_VALID_MSG);
         }
     }
