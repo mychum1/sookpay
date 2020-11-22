@@ -47,8 +47,9 @@ $ java -jar sookpay-0.0.1-SNAPSHOT.jar
 ```
 # 핵심 문제 해결 전략
 ## 1. 동시에 동일인이 뿌리기를 받을 경우
-동일인이 다른 디바이스로 동시에 받기를 요청한 경우 update query를 요청하는 시점에 데이터베이스에서 
-    1. 뿌리기 건에 할당된 빈 영수증들 데이터들을 확인해서 다른 인스턴스에서 선점했는지 확인한다.
+동일인이 다른 디바이스로 동시에 받기를 요청한 경우 update query를 요청하는 시점에 데이터베이스에서
+ 
+    1. 뿌리기 건에 할당된 빈 영수증들 데이터들을 확인해서 다른 인스턴스와 요청 에서 선점했는지 확인한다.
     2. 이미 선점했다면 롤백하고, 선점하지 않았다면 선점한다.
     3. 나중에 들어온 요청자가 먼저 선점하는 경우를 방지하기 위해 정렬해서 모든 요청자가 순서대로 선점할 수 있게끔 한다.
      
@@ -102,11 +103,11 @@ X-USER-ID|String|요청자 아이디|TRUE|x
 X-ROOM-ID|String|방 아이디|TRUE|x
 
 ### Response
-field name|value type
-----------|------------
-code|Integer
-msg|String
-data|Spray Object
+field name|value type|의미 
+----------|------------|---
+code|Integer|응답 코드 
+msg|String|응답 결과 
+data|Spray Object| 뿌려진 정보
 
 ## GET /api/spray
 뿌린 금액 받기 요청을 한다.
@@ -121,11 +122,11 @@ X-USER-ID|String|요청자 아이디|TRUE|x
 X-ROOM-ID|String|방 아이디|TRUE|x
 
 ### Response
-field name|value type
-----------|-----------
-code|Integer
-msg|String
-data|Receipt Object
+field name|value type|의미
+----------|-----------|----
+code|Integer|응답 코드
+msg|String|응답 결과
+data|Long|받은 금액
 
 ## GET /api/spray/info
 뿌린 요청의 현황을 조회한다.
@@ -140,35 +141,62 @@ X-USER-ID|String|요청자 아이디|TRUE|x
 X-ROOM-ID|String|방 아이디|TRUE|x
 
 ### Response
-field name|value type
-----------|-----------
-code|Integer
-msg|String
-data|SprayInfo Object
+field name|value type|의미 
+----------|-----------|---
+code|Integer|응답 코드 
+msg|String|응답 결과 
+data|SprayInfo Object| 받은 현황
 
 ## Response Objects
 ### Spray
+name|type|의미
+----|----|----
+id|Integer|뿌리기 건의 아이디
+token|String|뿌리기 건의 토큰
+requester|String|뿌리기 건을 요청한 사용자
+roomId|String|뿌리기 건을 요청한 방 아이디
+amountOfMoney|Long|뿌린 금액
+personnel|Integer|받을 인원
+initDate|Long|뿌린 날
 
 ### Receipt
+name|type|의미
+----|----|----
+receiptId|Integer|받은 건의 아이디
+token|String|뿌리기 건의 토큰
+roomId|String|뿌리기를 요청한 방 아이디
+recipient|String|받은 사용자의 아이디
+money|Long|받을 금액
+initDate|Long|받은 날
+status|Boolean|받은 상태
+receiptOrder|Integet|받을 순서
 
 ### SprayInfo
+name|type|의미
+---|---|---
+InitDate|Long|뿌린 날
+amountOfMoney|Long|뿌린 금액
+totalReceived|Long|받은 총 금액
+receivedInfoList|ReceivedInfo[]|받은 정보
 
-## Response Codes
-
-code | 의미
------|----
-200 | success
-500 | fail
+#### ReceivedInfo 
+name|type|의미
+receipient|String|받은 사람
+receivedMondy|Long|받은 금액
 
 ## Response Msgs
 
-msg | 의미
-----|----
-success | 성공 
-No Authority|권한이 없는 경우
-Time Over|시간 초과
-No Spray Info|생성한 뿌리기 건이 없는 경우
-No Room User|같은 방의 사용자가 아닌 경우
-Already taken|이미 받았을 경우
-Not Valid|여러 가지 사유로 유효하지 않을 경우
+code | msg | 의미
+-----|----|----
+200|success | 성공 
+500|fail | 실패
+501|not valid|여러 가지 사유로 유효하지 않을 경우
+502|time over|시간 초과
+503|already taken|이미 받았을 경우
+504|all taken|이미 전부 받았을 경우
+505|no authority|권한이 없는 경우
+
+
+
+
     
