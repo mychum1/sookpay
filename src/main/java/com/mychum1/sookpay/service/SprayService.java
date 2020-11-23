@@ -105,6 +105,7 @@ public class SprayService implements SprayServiceIn{
     public Receipt getSpray(String token, String userId, String roomId) throws NotValidSprayException {
         logger.info("call getSpray() token : {}, userId : {}, roomId : {}", token, userId, roomId);
         Spray spray = sprayRepository.findByToken(token);
+        ValidationProcessor.isValidSpray(spray);
         List<Receipt> receiptList = spray.getReceiptList();
         ValidationProcessor.isSameRoom(spray, roomId); // 같은 방의 사용자만 수령할 수 있다.
 
