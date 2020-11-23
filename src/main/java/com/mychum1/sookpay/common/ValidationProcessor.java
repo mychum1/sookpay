@@ -34,7 +34,7 @@ public class ValidationProcessor {
 
     /**
      * 유효한 뿌리기 건이 있는지 확인한다.
-     * @param receiptList
+     * @param spray
      * @throws NotValidSprayException
      */
     public static void isValidSpray(Spray spray) throws NotValidSprayException {
@@ -57,7 +57,8 @@ public class ValidationProcessor {
 
     /**
      * 같은 방의 사용자인지 확인한다.
-     * @param receipts
+     * @param roomId
+     * @param spray
      * @throws NotValidSprayException
      */
     public static void isSameRoom(Spray spray, String roomId) throws NotValidSprayException {

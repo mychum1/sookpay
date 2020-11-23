@@ -1,5 +1,6 @@
 package com.mychum1.sookpay.service;
 
+import com.mychum1.sookpay.common.Code;
 import com.mychum1.sookpay.common.RandomTokenProcessor;
 import com.mychum1.sookpay.common.ValidationProcessor;
 import com.mychum1.sookpay.domain.Receipt;
@@ -41,13 +42,19 @@ public class SprayService implements SprayServiceIn{
      * 최대 5번 수행한다.
      * @return
      */
-    private String makeUniqueToken() {
+    private String makeUniqueToken() throws NotValidSprayException {
         String token = RandomTokenProcessor.makeRandomToken();
+        boolean isDuplicated=true;
 
         for (int i = 0; i < 5; i++) {
             if(!sprayRepository.existsByToken(token)) {
+                isDuplicated=false;
                 break;
             }
+        }
+
+        if(isDuplicated) {
+            throw new NotValidSprayException(Code.FAIL_DUPL_TOKEN, Code.FAIL_DUPL_TOKEN_MSG);
         }
 
         return token;
@@ -63,7 +70,7 @@ public class SprayService implements SprayServiceIn{
      */
     @Override
     @Transactional
-    public Spray postSpray(String requester, String roomId, Long amountOfMoney, Integer personnel) {
+    public Spray postSpray(String requester, String roomId, Long amountOfMoney, Integer personnel) throws NotValidSprayException {
         logger.info("call postSpray() requester : {}, roomId : {}, amountOfMoney : {}, personnel : {}", requester, roomId, amountOfMoney, personnel);
 
         String token = makeUniqueToken();

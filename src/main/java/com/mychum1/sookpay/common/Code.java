@@ -9,6 +9,7 @@ public class Code {
     public static String FAIL_ALREADY_TAKEN_MSG= "already taken";
     public static String FAIL_ALL_TAKEN_MSG="all taken";
     public static String FAIL_NO_AUTHORITY_MSG="no authority";
+    public static String FAIL_DUPL_TOKEN_MSG="request again";
 
     public static Integer SUCCESS_CODE=200;
     public static Integer FAIL_CODE=500;
@@ -18,4 +19,5 @@ public class Code {
     public static Integer FAIL_ALREADY_TAKEN=503;
     public static Integer FAIL_ALL_TAKEN=504;
     public static Integer FAIL_NO_AUTHORITY=505;
+    public static Integer FAIL_DUPL_TOKEN=506;
 }

@@ -41,7 +41,7 @@ class SookpayApplicationServiceTests {
 	 * 돈 받기 - 같은 방에 있는 사용자가 아닌 경우
 	 */
 	@Test
-	public void testGetSprayNoSameRoom(){
+	public void testGetSprayNoSameRoom() throws NotValidSprayException {
 		Spray spray = sprayService.postSpray(userId, roomId, money, personnel);
 		String token = spray.getToken();
 		assertThrows(NotValidSprayException.class, () ->sprayService.getSpray(token, "another", "another"));
@@ -51,7 +51,7 @@ class SookpayApplicationServiceTests {
 	 * 돈 받기 - 돈을 뿌린 사람이 요청을 했을 경우
 	 */
 	@Test
-	public void testGetSprayNoValidRequester() {
+	public void testGetSprayNoValidRequester() throws NotValidSprayException {
 		Spray spray = sprayService.postSpray(userId, roomId, money, personnel);
 		String token = spray.getToken();
 		assertThrows(NotValidSprayException.class, () ->sprayService.getSpray(token, userId, roomId));

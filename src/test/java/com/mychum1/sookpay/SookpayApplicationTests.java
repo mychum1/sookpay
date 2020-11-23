@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mychum1.sookpay.controller.ApiController;
 import com.mychum1.sookpay.domain.Response;
+import com.mychum1.sookpay.exception.NotValidSprayException;
 import com.mychum1.sookpay.service.SprayService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,7 +88,7 @@ class SookpayApplicationTests {
 	 * 돈뿌리기 등록 서비스 테스트
 	 */
 	@Test
-	public void testPostSprayService() {
+	public void testPostSprayService() throws NotValidSprayException {
 		sprayService.postSpray(userId, roomId, Long.parseLong(money), Integer.parseInt(personnel));
 	}
 
